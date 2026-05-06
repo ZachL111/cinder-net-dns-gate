@@ -1,69 +1,40 @@
 # cinder-net-dns-gate
 
-`cinder-net-dns-gate` explores networking in TypeScript. The repository keeps the core rule set compact, then surrounds it with examples that show how the decisions move.
+`cinder-net-dns-gate` explores networking with a small TypeScript codebase and local fixtures. The technical goal is to design a TypeScript verification harness for dns systems, covering diagnostic reporting, negative fixtures, and failure-oriented tests.
 
-## Cinder Net DNS Gate Notes
+## Use Case
 
-The quickest review path is the verifier first, then the fixtures, then the operations note. That order makes it easy to see whether the code, data, and explanation still agree.
+This is intentionally local and self-contained so it can be inspected without credentials, services, or seeded history.
 
-## Feature Notes
+## Cinder Net DNS Gate Review Notes
 
-- Includes extended examples for retry behavior, including `surge` and `degraded`.
-- Documents policy decisions tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+`stale` and `baseline` are the cases worth reading first. They show the optimistic and cautious ends of the fixture.
 
-## Why This Exists
+## Highlights
 
-I use this kind of project to make a rule visible before adding more machinery around it. The important part here is not the size of the codebase. It is that the input signals, scoring rule, fixture data, and expected output can all be checked in one sitting.
+- `fixtures/domain_review.csv` adds cases for packet span and retry pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/cinder-net-dns-walkthrough.md` walks through the case spread.
+- The TypeScript code includes a review path for `packet span` and `packet span`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Code Tour
+## Code Layout
 
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-- `package.json`: Node package scripts
+The core code exposes a scoring path and the added review layer uses `signal`, `slack`, `drag`, and `confidence`. The domain terms are `packet span`, `retry pressure`, `route drift`, and `socket risk`.
 
-## Implementation Notes
+The added TypeScript path is deliberately direct, with fixtures doing most of the explaining.
 
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps packet shape, socket state, and retry behavior in one explicit decision path. The threshold is 173, with risk penalty 6, latency penalty 3, and weight bonus 6. The TypeScript project keeps types close to the model and compiles before running its checks.
-
-## Try It
+## Run The Check
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Regression Path
 
-## Example Scenarios
+That command is also the regression path. It verifies the domain cases and catches mismatches between the CSV, metadata, and code.
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
+## Future Work
 
-## Tests
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
-
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Boundaries
-
-The repository favors determinism over breadth. It does not pull live data, keep secrets, or depend on network access for verification.
-
-## Roadmap
-
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add one more networking fixture that focuses on a malformed or borderline input.
-
-## Local Setup
-
-Install TypeScript and run the commands from the repository root. The project does not need credentials or a hosted service.
+The repository is intentionally scoped to local checks. I would expand it by adding adversarial fixtures before adding features.
